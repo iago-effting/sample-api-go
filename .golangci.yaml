@@ -1,0 +1,15 @@
+linters:
+  disable:
+    - structcheck
+
+run:
+  go: '1.18'
+  concurrency: 4
+  timeout: 5m
+  issues-exit-code: 1
+  tests: false
+  skip-dirs:
+    - tasks
+    - bin
+  skip-dirs-use-default: true
+  
