@@ -13,20 +13,6 @@ import (
 
 func main() {
 	os.Setenv("ENV", "dev")
-
-	//var logger = logrus.New()
-	//{
-	//	logger.Out = os.Stdout
-	//	logger.SetReportCaller(false)
-	//
-	//	logger.SetFormatter(&logrus.TextFormatter{
-	//		ForceColors:      true,
-	//		DisableColors:    false,
-	//		DisableTimestamp: true,
-	//		DisableSorting:   true,
-	//		DisableQuote:     true,
-	//	})
-	//}
 	logger := logs.NewLoggerService(logs.LogrusAdapter())
 
 	logger.Debug("Env", os.Getenv("ENV"))

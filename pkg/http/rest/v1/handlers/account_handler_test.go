@@ -1,50 +1,22 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"github.com/steinfletcher/apitest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
-
-	"iago-effting/api-example/configs"
-	"iago-effting/api-example/pkg/storage/database"
 )
 
 func init() {
-	os.Setenv("ENV", "test")
-	var logger = logrus.New()
-	{
-		logger.Out = os.Stdout
-		logger.SetReportCaller(false)
-
-		logger.SetFormatter(&logrus.TextFormatter{
-			DisableColors:    true,
-			DisableTimestamp: true,
-			DisableSorting:   true,
-			DisableQuote:     true,
-		})
-	}
-
-	configService := configs.NewConfigService(os.Getenv("ENV"), logger)
-	configService.LoadEnvVars()
-
-	database.StartConnection()
-}
-
-func clearTables() {
-	ctx := context.Background()
-	database.BunDb.NewTruncateTable().Table("users").Exec(ctx)
+	Setup()
 }
 
 func TestCreateUser(t *testing.T) {
-	clearTables()
+	ClearTable("users")
 
 	server := gin.Default()
 	server.POST("/v1/accounts", CreateAccount)
