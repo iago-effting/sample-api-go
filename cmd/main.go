@@ -32,7 +32,9 @@ func main() {
 	level.Debug(logger).Log("Date Release", version.Time)
 
 	port := fmt.Sprintf(":%d", configs.Env.Server.Port)
-	err := http.Run(port)
+
+	serverService := http.NewServerService(port, logger)
+	err := serverService.Run()
 
 	if err != nil {
 		level.Error(logger).Log("Exit", err)

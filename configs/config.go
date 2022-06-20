@@ -45,7 +45,7 @@ func (s service) LoadEnvVars() {
 
 	fileName := fmt.Sprintf("configs/%s.toml", environment)
 
-	commomFeeder := feeder.Toml{Path: "configs/config.toml"}
+	commomFeeder := feeder.Toml{Path: "configs/common.toml"}
 	tomlFeeder := feeder.Toml{Path: fileName}
 	envFeeder := feeder.Env{}
 

@@ -1,6 +1,7 @@
 linters:
   disable:
     - structcheck
+    - errcheck
 
 run:
   go: '1.18'
