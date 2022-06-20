@@ -13,6 +13,9 @@ type ConfigEnv struct {
 	Server struct {
 		Port int `env:"SERVER_PORT"`
 	}
+	Database struct {
+		DSN string `env:"DATABASE_DRIVER"`
+	}
 	Debug bool   `env:"DEBUG"`
 	Name  string `env:"ENV"`
 }

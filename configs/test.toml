@@ -1,2 +1,5 @@
 name = "test"
 debug = true
+
+[database]
+driver="file::memory:?cache=shared"

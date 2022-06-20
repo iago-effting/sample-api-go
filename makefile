@@ -44,7 +44,9 @@ deps:
 		./scripts/deps.sh		\
 	"
 
-create-migration:
-	/bin/sh -c "						\
-		./scripts/create-migration.sh	\
+db-build:
+	/bin/sh -c "					\
+		go build 					\
+		-o ./bin/auto				\
+		./cmd/migrations/main.go	\
 	"

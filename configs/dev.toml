@@ -1,2 +1,5 @@
 name = "dev"
 debug = false
+
+[database]
+dsn="postgres://postgres:postgres@aaa:5432/program_dev?sslmode=disable"

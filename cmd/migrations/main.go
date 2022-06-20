@@ -1,30 +1,50 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
+	"github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"github.com/uptrace/bun/driver/sqliteshim"
 	"github.com/uptrace/bun/extra/bundebug"
 	"github.com/uptrace/bun/migrate"
 
 	"github.com/uptrace/bun"
 	"github.com/urfave/cli/v2"
 
+	"iago-effting/api-example/configs"
 	"iago-effting/api-example/migrations"
+	"iago-effting/api-example/storage/database"
 )
 
 func main() {
-	sqldb, err := sql.Open(sqliteshim.ShimName, "file:test.s3db?cache=shared")
-	if err != nil {
-		panic(err)
+	var logger log.Logger
+	{
+		logger = log.NewLogfmtLogger(os.Stderr)
+		logger = log.NewSyncLogger(logger)
+		logger = log.With(logger,
+			"service", "migrations",
+			"time:", log.DefaultTimestampUTC,
+		)
 	}
 
-	db := bun.NewDB(sqldb, sqlitedialect.New())
+	fmt.Println(logger)
+
+	configService := configs.NewConfigService(os.Getenv("ENV"), logger)
+	configService.LoadEnvVars()
+
+	databaseService := database.NewDatabaseService(
+		database.DatabaseOptions{
+			DSN: configs.Env.Database.DSN,
+		},
+		logger,
+	)
+
+	databaseService.Connect()
+
+	db := bun.NewDB(databaseService.GetDb(), sqlitedialect.New())
 	db.AddQueryHook(bundebug.NewQueryHook(
 		bundebug.WithEnabled(false),
 		bundebug.FromEnv(""),
@@ -34,15 +54,15 @@ func main() {
 		Name: "bun",
 
 		Commands: []*cli.Command{
-			newDBCommand(migrate.NewMigrator(db, migrations.Migrations)),
+			newDBCommand(migrate.NewMigrator(db, migrations.Migrations), logger),
 		},
 	}
 	if err := app.Run(os.Args); err != nil {
-		log.Fatal(err)
+		level.Error(logger).Log("args", err)
 	}
 }
 
-func newDBCommand(migrator *migrate.Migrator) *cli.Command {
+func newDBCommand(migrator *migrate.Migrator, logger log.Logger) *cli.Command {
 	return &cli.Command{
 		Name:  "db",
 		Usage: "database migrations",
@@ -51,6 +71,7 @@ func newDBCommand(migrator *migrate.Migrator) *cli.Command {
 				Name:  "init",
 				Usage: "create migration tables",
 				Action: func(c *cli.Context) error {
+					level.Error(logger).Log("Init", "start")
 					return migrator.Init(c.Context)
 				},
 			},

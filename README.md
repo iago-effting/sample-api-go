@@ -15,6 +15,7 @@ You can run any command below:
 - `make run` execute bin app
 - `make test` test the code
 - `make lint` execute golint
+- `make db-build` generate migration CLI
 
 ## Stack
 
@@ -23,6 +24,7 @@ You can run any command below:
 - golint
 - makefile
 - toml to file configuration
+- bun ORM
 
 ## Folders
 
@@ -39,4 +41,18 @@ pkg --> Core domain
 ├── version
 │   ├── version.go --> package to use current version in code
 ...
+```
+
+## Database
+
+To initiate run the command:
+
+```sh
+make db-build
+```
+
+Will be generate an app inside the `bin`, now you can use migrations CLI:
+
+```
+./bin/auto
 ```

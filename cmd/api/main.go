@@ -36,7 +36,7 @@ func main() {
 
 	databaseService := database.NewDatabaseService(
 		database.DatabaseOptions{
-			Driver: "file::memory:?cache=shared",
+			DSN: configs.Env.Database.DSN,
 		},
 		logger,
 	)

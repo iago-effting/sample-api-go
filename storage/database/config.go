@@ -5,9 +5,10 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
+
 	"github.com/uptrace/bun"
-	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"github.com/uptrace/bun/driver/sqliteshim"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/driver/pgdriver"
 )
 
 type service struct {
@@ -21,7 +22,7 @@ type Service interface {
 }
 
 type DatabaseOptions struct {
-	Driver string
+	DSN string
 }
 
 var db *bun.DB
@@ -38,15 +39,14 @@ func (s service) GetDb() *sql.DB {
 }
 
 func (s service) Connect() error {
-	sqldb, err := sql.Open(sqliteshim.ShimName, s.DatabaseOptions.Driver)
-	if err != nil {
-		level.Error(s.Logger).Log("Connect", err)
-		return err
+	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(s.DatabaseOptions.DSN)))
+
+	db = bun.NewDB(sqldb, pgdialect.New())
+	ping := db.Ping()
+
+	if ping != nil {
+		level.Debug(s.Logger).Log("DatabaseConnect", ping.Error())
 	}
-
-	db = bun.NewDB(sqldb, sqlitedialect.New())
-
-	level.Debug(s.Logger).Log("DatabaseConnect", true)
 
 	return nil
 }
