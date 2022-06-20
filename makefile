@@ -15,10 +15,10 @@ version:
 	
 build: $(BUILD_DIRS)
 	echo "# Building for $(OS)/$(ARCH)"	
-	/bin/sh -c "							\
-		VERSION=$(VERSION)					\
-		PATH_BIN=$(BUILD_DIRS)				\
-		./scripts/build.sh ./cmd/main.go	\
+	/bin/sh -c "								\
+		VERSION=$(VERSION)						\
+		PATH_BIN=$(BUILD_DIRS)					\
+		./scripts/build.sh ./cmd/api/main.go	\
 	"
 
 run: $(BUILD_DIRS)
@@ -42,4 +42,9 @@ lint:
 deps:
 	/bin/sh -c "				\
 		./scripts/deps.sh		\
+	"
+
+create-migration:
+	/bin/sh -c "						\
+		./scripts/create-migration.sh	\
 	"

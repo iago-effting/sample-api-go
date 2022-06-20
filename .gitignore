@@ -1,1 +1,3 @@
 /bin
+.vscode
+*.s3db
