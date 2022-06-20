@@ -22,37 +22,21 @@ You can run any command below:
 - go lang
 - golint
 - makefile
+- toml to file configuration
 
 ## Folders
 
 ```
-cmd --> programs/binaries
-├── main.go --> Ways to start this program (cli mode, server, etc)*
+...
+configs
+├── config.go -> code about set envs
+├── config.toml -> configs common in all envs
+├── dev.toml -> variables in the dev env
+├── test.toml -> variables in the test env
 pkg --> Core domain
+├── http --> transport layer
+│   ├── rest --> handlers/middlewares/input validations/output
 ├── version
 │   ├── version.go --> package to use current version in code
-scripts --> scripts utils to run/test/cover/check the app
-├── build.sh
-├── lint.sh
-├── run.sh
-├── test.sh
-.gitlab-ci.yml --> CI configuration
-.golangci.yml --> Linter configuration
-.tool-versions --> lock language version
-go.mod
-go.sum
-makefile --> automation tool 
-README.md --> getting started
-```
-
-__*__ This example is just one in cmd. But if we need for example, a cli and a server, we can put the main inside one folder calls server e create another folder bellow cmd calls cli and create a way to execute the staffs we need. (For this work, we need update the **build.sh** to get a array of folders and build each one)
-
-```
-...
-cmd
-├── server
-│   ├── main.go
-├── cli
-│   ├── main.go
 ...
 ```

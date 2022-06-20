@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"iago-effting/api-example/configs"
 	"iago-effting/api-example/pkg/http"
 	"iago-effting/api-example/pkg/version"
 	"log"
@@ -9,10 +10,14 @@ import (
 )
 
 func main() {
+	configs.SetVarEnvs(os.Getenv("ENV"))
+
+	fmt.Println("Env: ", configs.Env.Name)
 	fmt.Println("Version: ", version.Version)
 	fmt.Println("Time Release:", version.Time)
 
-	err := http.Run(":2020")
+	port := fmt.Sprintf(":%d", configs.Env.Server.Port)
+	err := http.Run(port)
 
 	if err != nil {
 		log.Fatalln(err)
