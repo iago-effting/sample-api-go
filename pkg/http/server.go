@@ -1,7 +1,6 @@
 package http
 
 import (
-	"database/sql"
 	"iago-effting/api-example/configs"
 	"iago-effting/api-example/pkg/http/rest"
 
@@ -12,18 +11,16 @@ import (
 type service struct {
 	Logger log.Logger
 	Port   string
-	DB     *sql.DB
 }
 
 type Service interface {
 	Run() error
 }
 
-func NewServerService(port string, logger log.Logger, db *sql.DB) Service {
+func NewServerService(port string, logger log.Logger) Service {
 	return &service{
 		Logger: logger,
 		Port:   port,
-		DB:     db,
 	}
 }
 
@@ -33,7 +30,7 @@ func (s service) Run() error {
 	}
 
 	router := gin.Default()
-	router.Use(Logger(s.Logger, s.DB))
+	router.Use(Logger(s.Logger))
 	router = rest.Router(router)
 
 	return router.Run(s.Port)

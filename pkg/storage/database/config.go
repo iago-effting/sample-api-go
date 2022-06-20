@@ -18,14 +18,14 @@ type service struct {
 
 type Service interface {
 	Connect() error
-	GetDb() *sql.DB
+	GetDb() *bun.DB
 }
 
 type DatabaseOptions struct {
 	DSN string
 }
 
-var db *bun.DB
+var BunDb *bun.DB
 
 func NewDatabaseService(options DatabaseOptions, logger log.Logger) Service {
 	return &service{
@@ -34,15 +34,15 @@ func NewDatabaseService(options DatabaseOptions, logger log.Logger) Service {
 	}
 }
 
-func (s service) GetDb() *sql.DB {
-	return db.DB
+func (s service) GetDb() *bun.DB {
+	return BunDb
 }
 
 func (s service) Connect() error {
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(s.DatabaseOptions.DSN)))
 
-	db = bun.NewDB(sqldb, pgdialect.New())
-	ping := db.Ping()
+	BunDb = bun.NewDB(sqldb, pgdialect.New())
+	ping := BunDb.Ping()
 
 	if ping != nil {
 		level.Debug(s.Logger).Log("DatabaseConnect", ping.Error())

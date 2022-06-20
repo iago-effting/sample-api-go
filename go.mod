@@ -7,6 +7,7 @@ require (
 	github.com/go-kit/log v0.2.1
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/golobby/config/v3 v3.3.4
+	github.com/google/uuid v1.3.0
 	github.com/stretchr/testify v1.7.1
 	github.com/uptrace/bun v1.1.5
 	github.com/uptrace/bun/dialect/pgdialect v1.1.5
