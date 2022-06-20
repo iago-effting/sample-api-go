@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"fmt"
+	"iago-effting/api-example/pkg/logs"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,17 +28,23 @@ func IndexAccount(ctx *gin.Context) {
 }
 
 func ViewAccount(ctx *gin.Context) {
+	var logger = ctx.MustGet("logger").(logs.Logger)
 	var usersRepository account.Repository = accountDb.Repo()
 	var data *account.User
 
 	id := ctx.Param("id")
 	data, err := usersRepository.Get(ctx, id)
 
+	logger.Info(fmt.Sprintf("Getting view account for ID %s", id))
+
 	if err != nil {
+		logger.Error(err.Error())
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"status": err.Error(),
 		})
 	}
+
+	logger.Info("Account found")
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": data,

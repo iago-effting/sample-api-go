@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
 
@@ -13,23 +12,12 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"iago-effting/api-example/configs"
+	"iago-effting/api-example/pkg/logs"
 	"iago-effting/api-example/pkg/storage/database"
 )
 
 func main() {
-	var logger = logrus.New()
-	{
-		logger.Out = os.Stdout
-		logger.SetReportCaller(false)
-
-		logger.SetFormatter(&logrus.TextFormatter{
-			ForceColors:      true,
-			DisableColors:    false,
-			DisableTimestamp: true,
-			DisableSorting:   true,
-			DisableQuote:     true,
-		})
-	}
+	logger := logs.NewLoggerService(logs.LogrusAdapter())
 
 	configService := configs.NewConfigService(os.Getenv("ENV"), logger)
 	configService.LoadEnvVars()
@@ -62,7 +50,7 @@ func main() {
 	}
 }
 
-func MakeCommands(migrator *migrate.Migrate, logger *logrus.Logger) *cli.Command {
+func MakeCommands(migrator *migrate.Migrate, logger logs.Logger) *cli.Command {
 	return &cli.Command{
 		Name:  "make",
 		Usage: "Manager your make actions",
@@ -98,7 +86,7 @@ func MakeCommands(migrator *migrate.Migrate, logger *logrus.Logger) *cli.Command
 	}
 }
 
-func MigrationCommands(migrator *migrate.Migrate, logger *logrus.Logger) *cli.Command {
+func MigrationCommands(migrator *migrate.Migrate, logger logs.Logger) *cli.Command {
 	return &cli.Command{
 		Name:  "migrate",
 		Usage: "Manager your database migrations",

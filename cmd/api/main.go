@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
+	"iago-effting/api-example/pkg/logs"
 	"os"
-
-	"github.com/sirupsen/logrus"
 
 	"iago-effting/api-example/configs"
 	"iago-effting/api-example/pkg/http"
@@ -15,19 +14,20 @@ import (
 func main() {
 	os.Setenv("ENV", "dev")
 
-	var logger = logrus.New()
-	{
-		logger.Out = os.Stdout
-		logger.SetReportCaller(false)
-
-		logger.SetFormatter(&logrus.TextFormatter{
-			ForceColors:      true,
-			DisableColors:    false,
-			DisableTimestamp: true,
-			DisableSorting:   true,
-			DisableQuote:     true,
-		})
-	}
+	//var logger = logrus.New()
+	//{
+	//	logger.Out = os.Stdout
+	//	logger.SetReportCaller(false)
+	//
+	//	logger.SetFormatter(&logrus.TextFormatter{
+	//		ForceColors:      true,
+	//		DisableColors:    false,
+	//		DisableTimestamp: true,
+	//		DisableSorting:   true,
+	//		DisableQuote:     true,
+	//	})
+	//}
+	logger := logs.NewLoggerService(logs.LogrusAdapter())
 
 	logger.Debug("Env", os.Getenv("ENV"))
 
@@ -53,7 +53,6 @@ func main() {
 
 	err := serverService.Run()
 	if err != nil {
-		logger.SetReportCaller(true)
 		logger.Error("Exit", err)
 		os.Exit(-1)
 	}

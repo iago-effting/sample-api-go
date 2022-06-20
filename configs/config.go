@@ -2,12 +2,14 @@ package configs
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
+
 	"path/filepath"
 	"runtime"
 
 	"github.com/golobby/config/v3"
 	"github.com/golobby/config/v3/pkg/feeder"
+
+	"iago-effting/api-example/pkg/logs"
 )
 
 type ConfigEnv struct {
@@ -34,7 +36,7 @@ type ConfigEnv struct {
 
 type service struct {
 	Env    string
-	Logger *logrus.Logger
+	Logger logs.Logger
 }
 
 type Service interface {
@@ -43,7 +45,7 @@ type Service interface {
 
 var Env ConfigEnv
 
-func NewConfigService(env string, logger *logrus.Logger) Service {
+func NewConfigService(env string, logger logs.Logger) Service {
 	return &service{
 		Env:    env,
 		Logger: logger,
