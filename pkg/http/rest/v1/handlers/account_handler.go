@@ -7,13 +7,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"iago-effting/api-example/pkg/account"
+	"iago-effting/api-example/pkg/accounts"
 	accountDb "iago-effting/api-example/pkg/storage/database/account"
 )
 
 func IndexAccount(ctx *gin.Context) {
-	var usersRepository account.Repository = accountDb.Repo()
-	var data *[]account.User
+	var usersRepository accounts.Repository = accountDb.Repo()
+	var data *[]accounts.User
 
 	data, err := usersRepository.All(ctx)
 	if err != nil {
@@ -29,13 +29,13 @@ func IndexAccount(ctx *gin.Context) {
 
 func ViewAccount(ctx *gin.Context) {
 	var logger = ctx.MustGet("logger").(logs.Logger)
-	var usersRepository account.Repository = accountDb.Repo()
-	var data *account.User
+	var usersRepository accounts.Repository = accountDb.Repo()
+	var data *accounts.User
 
 	id := ctx.Param("id")
 	data, err := usersRepository.Get(ctx, id)
 
-	logger.Info(fmt.Sprintf("Getting view account for ID %s", id))
+	logger.Info(fmt.Sprintf("Getting view accounts for ID %s", id))
 
 	if err != nil {
 		logger.Error(err.Error())
@@ -52,7 +52,7 @@ func ViewAccount(ctx *gin.Context) {
 }
 
 func DeleteAccount(ctx *gin.Context) {
-	var usersRepository account.Repository = accountDb.Repo()
+	var usersRepository accounts.Repository = accountDb.Repo()
 
 	id := ctx.Param("id")
 	err := usersRepository.Delete(ctx, id)
@@ -70,14 +70,14 @@ func DeleteAccount(ctx *gin.Context) {
 
 func CreateAccount(ctx *gin.Context) {
 	var createUserRequest CreateAccountRequest
-	var usersRepository account.Repository = accountDb.Repo()
+	var usersRepository accounts.Repository = accountDb.Repo()
 
 	if err := ctx.ShouldBindJSON(&createUserRequest); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	user := account.User{
+	user := accounts.User{
 		Email:    createUserRequest.Email,
 		Password: createUserRequest.Password,
 	}

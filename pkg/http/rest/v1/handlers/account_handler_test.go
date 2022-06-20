@@ -47,7 +47,7 @@ func TestCreateUser(t *testing.T) {
 	clearTables()
 
 	server := gin.Default()
-	server.POST("/v1/account", CreateAccount)
+	server.POST("/v1/accounts", CreateAccount)
 	ts := httptest.NewServer(server)
 	ts.Close()
 
@@ -62,7 +62,7 @@ func TestCreateUser(t *testing.T) {
 
 		apitest.New().
 			Handler(server).
-			Post("/v1/account").
+			Post("/v1/accounts").
 			JSON(string(body)).
 			Expect(t).
 			Assert(jsonpath.Equal(`$.data.email`, params.Email)).
@@ -73,7 +73,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("Params not valid", func(t *testing.T) {
 		apitest.New().
 			Handler(server).
-			Post("/v1/account").
+			Post("/v1/accounts").
 			Expect(t).
 			Status(http.StatusBadRequest).
 			End()
