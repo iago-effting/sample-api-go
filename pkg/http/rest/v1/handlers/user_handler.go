@@ -25,6 +25,41 @@ func IndexUser(ctx *gin.Context) {
 	})
 }
 
+func ViewUser(ctx *gin.Context) {
+	var usersRepository auth.Repository = users.Repo()
+	var data *auth.User
+
+	id := ctx.Param("id")
+	data, err := usersRepository.Get(ctx, id)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status": err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": data,
+	})
+}
+
+func DeleteUser(ctx *gin.Context) {
+	var usersRepository auth.Repository = users.Repo()
+
+	id := ctx.Param("id")
+	err := usersRepository.Delete(ctx, id)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status": err.Error(),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status": "Deleted successfully",
+	})
+}
+
 func CreateUser(ctx *gin.Context) {
 	var createUserRequest CreateUserRequest
 	var usersRepository users.Repository = users.Repo()

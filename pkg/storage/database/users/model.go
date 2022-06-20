@@ -10,7 +10,6 @@ import (
 	"iago-effting/api-example/pkg/storage/database"
 )
 
-// DTO
 type UserBun struct {
 	bun.BaseModel `bun:"table:users,alias:u"`
 
@@ -35,6 +34,31 @@ func Repo() Repository {
 	return Repository{
 		connection: database.BunDb,
 	}
+}
+
+func (r Repository) Get(ctx context.Context, id string) (*auth.User, error) {
+	var userModel UserBun
+	var user auth.User
+
+	err := r.connection.NewSelect().Model(&userModel).Scan(ctx)
+	if err != nil {
+		return &user, err
+	}
+
+	user = userModel.ToEntity()
+
+	return &user, nil
+}
+
+func (r Repository) Delete(ctx context.Context, id string) error {
+	var user UserBun
+	_, err := r.connection.NewDelete().Model(&user).Where("id = ?", id).Exec(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r Repository) Save(ctx context.Context, user auth.User) (*auth.User, error) {
