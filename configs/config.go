@@ -2,6 +2,8 @@ package configs
 
 import (
 	"fmt"
+	"path/filepath"
+	"runtime"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
@@ -49,10 +51,14 @@ func (s service) LoadEnvVars() {
 
 	appconfiguration := ConfigEnv{}
 
-	fileName := fmt.Sprintf("configs/%s.toml", environment)
+	_, filename, _, _ := runtime.Caller(0)
+	baseFolder := filepath.Dir(filename)
 
-	commomFeeder := feeder.Toml{Path: "configs/common.toml"}
-	tomlFeeder := feeder.Toml{Path: fileName}
+	commonFileName := fmt.Sprintf("%s/%s.toml", baseFolder, environment)
+	envFileName := fmt.Sprintf("%s/common.toml", baseFolder)
+
+	commomFeeder := feeder.Toml{Path: commonFileName}
+	tomlFeeder := feeder.Toml{Path: envFileName}
 	envFeeder := feeder.Env{}
 
 	c := config.New()
@@ -65,10 +71,13 @@ func (s service) LoadEnvVars() {
 
 	err := c.Feed()
 	if err != nil {
+		fmt.Println("Error", err.Error())
 		level.Error(s.Logger).Log(err)
 	}
 
 	Env = appconfiguration
+
+	fmt.Println("appconfiguration", appconfiguration.Database.DSN)
 
 	level.Debug(s.Logger).Log("LoadEnvVar", true)
 }

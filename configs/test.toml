@@ -1,5 +1,5 @@
 name = "test"
-debug = true
+debug = false
 
 [database]
-driver="file::memory:?cache=shared"
+dsn="postgres://postgres:postgres@localhost:5432/program_dev?sslmode=disable"
