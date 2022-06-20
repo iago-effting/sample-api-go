@@ -15,3 +15,13 @@ func DebugLevel(c *gin.Context, key string, value interface{}) {
 
 	level.Debug((logger).(log.Logger)).Log(key, value)
 }
+
+func ErrorLevel(c *gin.Context, key string, value interface{}) {
+	logger, hasLogger := c.Get("logger")
+
+	if !hasLogger {
+		return
+	}
+
+	level.Error((logger).(log.Logger)).Log(key, value)
+}
