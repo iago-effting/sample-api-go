@@ -15,7 +15,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 
 	"iago-effting/api-example/configs"
-	"iago-effting/api-example/storage/database"
+	"iago-effting/api-example/pkg/storage/database"
 )
 
 func main() {

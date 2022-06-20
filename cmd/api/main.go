@@ -6,8 +6,8 @@ import (
 
 	"iago-effting/api-example/configs"
 	"iago-effting/api-example/pkg/http"
+	"iago-effting/api-example/pkg/storage/database"
 	"iago-effting/api-example/pkg/version"
-	"iago-effting/api-example/storage/database"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"

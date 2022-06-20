@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"iago-effting/api-example/pkg/http/rest/handlers"
+	"iago-effting/api-example/pkg/http/rest/v1/handlers"
 
 	"github.com/gin-gonic/gin"
 )
