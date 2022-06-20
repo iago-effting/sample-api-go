@@ -3,6 +3,8 @@ package configs
 import (
 	"fmt"
 
+	"github.com/go-kit/log"
+	"github.com/go-kit/log/level"
 	"github.com/golobby/config/v3"
 	"github.com/golobby/config/v3/pkg/feeder"
 )
@@ -15,11 +17,27 @@ type ConfigEnv struct {
 	Name  string `env:"ENV"`
 }
 
+type service struct {
+	Env    string
+	Logger log.Logger
+}
+
+type Service interface {
+	LoadEnvVars()
+}
+
 var Env ConfigEnv
 
-func SetVarEnvs(envMode string) {
+func NewConfigService(env string, logger log.Logger) Service {
+	return &service{
+		Env:    env,
+		Logger: logger,
+	}
+}
+
+func (s service) LoadEnvVars() {
 	environment := "dev"
-	if env := envMode; env != "" {
+	if env := s.Env; env != "" {
 		environment = env
 	}
 
@@ -41,8 +59,10 @@ func SetVarEnvs(envMode string) {
 
 	err := c.Feed()
 	if err != nil {
-		panic(err)
+		level.Error(s.Logger).Log(err)
 	}
 
 	Env = appconfiguration
+
+	level.Debug(s.Logger).Log("LoadEnvVar", true)
 }

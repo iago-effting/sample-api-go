@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"github.com/gin-gonic/gin"
-
 	"iago-effting/api-example/pkg/http/rest/handlers"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Router(app *gin.Engine) *gin.Engine {
