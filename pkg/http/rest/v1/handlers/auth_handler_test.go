@@ -36,7 +36,7 @@ func TestAuthUser(t *testing.T) {
 			Password: "123456789",
 		}
 
-		createAccount(account)
+		FactoryCreateAccount(account)
 
 		params := authentication.Credentials{
 			Email:    account.Email,
@@ -73,7 +73,7 @@ func TestAuthUser(t *testing.T) {
 	})
 }
 
-func createAccount(userParams accounts.User) *accounts.User {
+func FactoryCreateAccount(userParams accounts.User) *accounts.User {
 	var ctx = context.Background()
 	var usersRepository accounts.Repository = accountDb.Repo()
 

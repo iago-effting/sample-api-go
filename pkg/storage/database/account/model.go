@@ -2,6 +2,7 @@ package account
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 	"iago-effting/api-example/pkg/accounts"
@@ -33,6 +34,25 @@ func Repo() Repository {
 	return Repository{
 		connection: database.BunDb,
 	}
+}
+
+func (r Repository) GetBy(ctx context.Context, field string, value string) (*accounts.User, error) {
+	var userModel UserBun
+	var user accounts.User
+	var condition = fmt.Sprintf("%s = ?", field)
+
+	err := r.connection.NewSelect().
+		Model(&userModel).
+		Where(condition, value).
+		Scan(ctx)
+
+	if err != nil {
+		return &user, err
+	}
+
+	user = userModel.ToEntity()
+
+	return &user, nil
 }
 
 func (r Repository) Get(ctx context.Context, id string) (*accounts.User, error) {
@@ -95,4 +115,14 @@ func (r Repository) All(ctx context.Context) (*[]accounts.User, error) {
 	}
 
 	return &users, nil
+}
+
+func getField(value string) string {
+	if value == "email" {
+		return "u.email"
+	} else if value == "id" {
+		return "u.id"
+	}
+
+	return "u.id"
 }

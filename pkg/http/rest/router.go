@@ -11,7 +11,7 @@ func Router(app *gin.Engine) *gin.Engine {
 
 	v1 := app.Group("/v1")
 	{
-		v1.GET("/accounts/:id", midlewares.AuthorizeJWT(), handlers.ViewAccount)
+		v1.GET("/me", midlewares.AuthorizeJWT(), handlers.ViewAccount)
 		v1.GET("/accounts", handlers.IndexAccount)
 		v1.DELETE("/accounts/:id", handlers.DeleteAccount)
 

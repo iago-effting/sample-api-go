@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"iago-effting/api-example/pkg/accounts"
+	"iago-effting/api-example/pkg/authentication"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,6 +16,38 @@ import (
 
 func init() {
 	Setup()
+}
+
+func TestMe(t *testing.T) {
+	ClearTable("users")
+
+	server := gin.Default()
+	server.POST("/v1/me", ViewAccount)
+
+	ts := httptest.NewServer(server)
+	ts.Close()
+
+	t.Run("Get profile", func(t *testing.T) {
+		var jwtService = authentication.JWTAuthService()
+
+		params := accounts.User{
+			Email:    "test@test.com",
+			Password: "12345",
+		}
+
+		FactoryCreateAccount(params)
+		token := jwtService.GenerateToken(params.Email)
+
+		apitest.New().
+			Handler(server).
+			Post("/v1/me").
+			Header("Authorization", fmt.Sprintf("Bearer %s", token)).
+			Expect(t).
+			Assert(jsonpath.Equal(`$.data.email`, params.Email)).
+			//Assert(jsonpath.JWTHeaderEqual(fromAuthHeader, `$.alg`, "HS256")).
+			Status(http.StatusOK).
+			End()
+	})
 }
 
 func TestCreateUser(t *testing.T) {

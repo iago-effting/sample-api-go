@@ -1,7 +1,6 @@
 package midlewares
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -32,11 +31,11 @@ func AuthorizeJWT() gin.HandlerFunc {
 
 		if token.Valid {
 			claims := token.Claims.(jwt.MapClaims)
-			fmt.Println(claims)
+			c.Set("identity", claims["identity"])
 		} else {
-			fmt.Println("==> error middleawre", err)
 			c.AbortWithStatus(http.StatusUnauthorized)
 		}
 
+		c.Next()
 	}
 }

@@ -30,12 +30,12 @@ func IndexAccount(ctx *gin.Context) {
 func ViewAccount(ctx *gin.Context) {
 	var logger = ctx.MustGet("logger").(logs.Logger)
 	var usersRepository accounts.Repository = accountDb.Repo()
+	var identity = ctx.MustGet("identity").(string)
 	var data *accounts.User
 
-	id := ctx.Param("id")
-	data, err := usersRepository.Get(ctx, id)
+	data, err := usersRepository.GetBy(ctx, "email", identity)
 
-	logger.Info(fmt.Sprintf("Getting view accounts for ID %s", id))
+	logger.Info(fmt.Sprintf("Getting view accounts for ID %s", data.ID))
 
 	if err != nil {
 		logger.Error(err.Error())

@@ -15,7 +15,7 @@ type JWTService interface {
 }
 
 type authCustomClaims struct {
-	Name string `json:"name"`
+	Identity string `json:"identity"`
 	jwt.StandardClaims
 }
 
@@ -39,11 +39,11 @@ func getSecretKey() string {
 	return secret
 }
 
-func (service *jwtServices) GenerateToken(email string) string {
+func (service *jwtServices) GenerateToken(identity string) string {
 	timeToExpires := time.Duration(configs.Env.Authentication.Expires) * time.Hour
 
 	claims := &authCustomClaims{
-		email,
+		identity,
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(timeToExpires).Unix(),
 			Issuer:    service.issuer,

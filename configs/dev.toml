@@ -4,7 +4,7 @@ name = "dev"
 dsn="postgres://postgres:postgres@localhost:5432/program_dev?sslmode=disable"
 
 [debug]
-database = false
+database = true
 application = true
 
 [authentication]
