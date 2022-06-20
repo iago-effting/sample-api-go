@@ -5,13 +5,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"iago-effting/api-example/pkg/auth"
-	"iago-effting/api-example/pkg/storage/database/users"
+	"iago-effting/api-example/pkg/account"
+	accountDb "iago-effting/api-example/pkg/storage/database/account"
 )
 
-func IndexUser(ctx *gin.Context) {
-	var usersRepository auth.Repository = users.Repo()
-	var data *[]auth.User
+func IndexAccount(ctx *gin.Context) {
+	var usersRepository account.Repository = accountDb.Repo()
+	var data *[]account.User
 
 	data, err := usersRepository.All(ctx)
 	if err != nil {
@@ -25,9 +25,9 @@ func IndexUser(ctx *gin.Context) {
 	})
 }
 
-func ViewUser(ctx *gin.Context) {
-	var usersRepository auth.Repository = users.Repo()
-	var data *auth.User
+func ViewAccount(ctx *gin.Context) {
+	var usersRepository account.Repository = accountDb.Repo()
+	var data *account.User
 
 	id := ctx.Param("id")
 	data, err := usersRepository.Get(ctx, id)
@@ -43,8 +43,8 @@ func ViewUser(ctx *gin.Context) {
 	})
 }
 
-func DeleteUser(ctx *gin.Context) {
-	var usersRepository auth.Repository = users.Repo()
+func DeleteAccount(ctx *gin.Context) {
+	var usersRepository account.Repository = accountDb.Repo()
 
 	id := ctx.Param("id")
 	err := usersRepository.Delete(ctx, id)
@@ -60,16 +60,16 @@ func DeleteUser(ctx *gin.Context) {
 	})
 }
 
-func CreateUser(ctx *gin.Context) {
-	var createUserRequest CreateUserRequest
-	var usersRepository users.Repository = users.Repo()
+func CreateAccount(ctx *gin.Context) {
+	var createUserRequest CreateAccountRequest
+	var usersRepository account.Repository = accountDb.Repo()
 
 	if err := ctx.ShouldBindJSON(&createUserRequest); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	user := auth.User{
+	user := account.User{
 		Email:    createUserRequest.Email,
 		Password: createUserRequest.Password,
 	}
@@ -86,7 +86,7 @@ func CreateUser(ctx *gin.Context) {
 	})
 }
 
-type CreateUserRequest struct {
+type CreateAccountRequest struct {
 	Email          string `json:"email" binding:"required"`
 	Password       string `json:"password" binding:"required"`
 	RepeatPassword string `json:"repeat_password" binding:"required"`

@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"iago-effting/api-example/pkg/storage/database"
 	"os"
 
 	"github.com/sirupsen/logrus"
 
 	"iago-effting/api-example/configs"
 	"iago-effting/api-example/pkg/http"
+	"iago-effting/api-example/pkg/storage/database"
 	"iago-effting/api-example/pkg/version"
 )
 

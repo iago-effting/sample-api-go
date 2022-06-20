@@ -17,7 +17,7 @@ func StartConnection() (*bun.DB, error) {
 		logger = log.NewLogfmtLogger(os.Stderr)
 		logger = log.NewSyncLogger(logger)
 		logger = log.With(logger,
-			"service", "users",
+			"service", "account",
 			"time:", log.DefaultTimestampUTC,
 			"caller", log.DefaultCaller,
 		)

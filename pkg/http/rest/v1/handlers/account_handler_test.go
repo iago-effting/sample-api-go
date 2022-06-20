@@ -9,8 +9,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-kit/log"
-	"github.com/go-kit/log/level"
+	"github.com/sirupsen/logrus"
 	"github.com/steinfletcher/apitest"
 	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 
@@ -20,11 +19,17 @@ import (
 
 func init() {
 	os.Setenv("ENV", "test")
-	var logger log.Logger
+	var logger = logrus.New()
 	{
-		logger = log.NewLogfmtLogger(os.Stderr)
-		logger = log.NewSyncLogger(logger)
-		logger = level.NewFilter(logger, level.AllowError())
+		logger.Out = os.Stdout
+		logger.SetReportCaller(false)
+
+		logger.SetFormatter(&logrus.TextFormatter{
+			DisableColors:    true,
+			DisableTimestamp: true,
+			DisableSorting:   true,
+			DisableQuote:     true,
+		})
 	}
 
 	configService := configs.NewConfigService(os.Getenv("ENV"), logger)
@@ -42,12 +47,12 @@ func TestCreateUser(t *testing.T) {
 	clearTables()
 
 	server := gin.Default()
-	server.POST("/v1/users", CreateUser)
+	server.POST("/v1/account", CreateAccount)
 	ts := httptest.NewServer(server)
 	ts.Close()
 
 	t.Run("User Created", func(t *testing.T) {
-		params := CreateUserRequest{
+		params := CreateAccountRequest{
 			Email:          "test@test.com",
 			Password:       "12345",
 			RepeatPassword: "12345",
@@ -57,7 +62,7 @@ func TestCreateUser(t *testing.T) {
 
 		apitest.New().
 			Handler(server).
-			Post("/v1/users").
+			Post("/v1/account").
 			JSON(string(body)).
 			Expect(t).
 			Assert(jsonpath.Equal(`$.data.email`, params.Email)).
@@ -68,7 +73,7 @@ func TestCreateUser(t *testing.T) {
 	t.Run("Params not valid", func(t *testing.T) {
 		apitest.New().
 			Handler(server).
-			Post("/v1/users").
+			Post("/v1/account").
 			Expect(t).
 			Status(http.StatusBadRequest).
 			End()

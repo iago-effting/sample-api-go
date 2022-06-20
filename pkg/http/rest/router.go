@@ -9,10 +9,10 @@ import (
 func Router(app *gin.Engine) *gin.Engine {
 	v1 := app.Group("/v1")
 	{
-		v1.GET("/users", handlers.IndexUser)
-		v1.POST("/users", handlers.CreateUser)
-		v1.GET("/users/:id", handlers.ViewUser)
-		v1.DELETE("/users/:id", handlers.DeleteUser)
+		v1.GET("/account", handlers.IndexAccount)
+		v1.POST("/account", handlers.CreateAccount)
+		v1.GET("/account/:id", handlers.ViewAccount)
+		v1.DELETE("/account/:id", handlers.DeleteAccount)
 	}
 
 	return app

@@ -1,4 +1,4 @@
-package users
+package account
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 
-	"iago-effting/api-example/pkg/auth"
+	"iago-effting/api-example/pkg/account"
 	"iago-effting/api-example/pkg/storage/database"
 )
 
@@ -18,8 +18,8 @@ type UserBun struct {
 	Password string
 }
 
-func (u UserBun) ToEntity() auth.User {
-	return auth.User{
+func (u UserBun) ToEntity() account.User {
+	return account.User{
 		ID:       u.ID,
 		Email:    u.Email,
 		Password: u.Password,
@@ -36,9 +36,9 @@ func Repo() Repository {
 	}
 }
 
-func (r Repository) Get(ctx context.Context, id string) (*auth.User, error) {
+func (r Repository) Get(ctx context.Context, id string) (*account.User, error) {
 	var userModel UserBun
-	var user auth.User
+	var user account.User
 
 	err := r.connection.NewSelect().Model(&userModel).Scan(ctx)
 	if err != nil {
@@ -61,7 +61,7 @@ func (r Repository) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r Repository) Save(ctx context.Context, user auth.User) (*auth.User, error) {
+func (r Repository) Save(ctx context.Context, user account.User) (*account.User, error) {
 	model := &UserBun{
 		Email:    user.Email,
 		Password: user.Password,
@@ -77,9 +77,9 @@ func (r Repository) Save(ctx context.Context, user auth.User) (*auth.User, error
 	return &user, nil
 }
 
-func (r Repository) All(ctx context.Context) (*[]auth.User, error) {
+func (r Repository) All(ctx context.Context) (*[]account.User, error) {
 	var usersModel []UserBun
-	var users []auth.User
+	var users []account.User
 
 	err := r.connection.NewSelect().Model(&usersModel).Scan(ctx)
 	if err != nil {
