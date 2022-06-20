@@ -22,6 +22,11 @@ build: $(BUILD_DIRS)
 		./scripts/build.sh ./cmd/api/main.go	\
 	"
 
+build_focus: $(BUILD_DIRS)
+	/bin/sh -c "									\
+		go build -o bin/focus  ./cmd/cli/main.go	\
+	"
+
 run: $(BUILD_DIRS)
 	echo "# Running for $(OS)/$(ARCH)"	
 	make build

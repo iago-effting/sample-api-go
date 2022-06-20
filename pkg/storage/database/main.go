@@ -25,6 +25,11 @@ func StartConnection() (*bun.DB, error) {
 	databaseService := NewDatabaseService(
 		DatabaseOptions{
 			DSN: configs.Env.Database.DSN,
+			User: configs.Env.Database.User,
+			Password: configs.Env.Database.Password,
+			Host: configs.Env.Database.Host,
+			Port: configs.Env.Database.Port,
+			Name: configs.Env.Database.Name,
 		},
 		logger,
 	)

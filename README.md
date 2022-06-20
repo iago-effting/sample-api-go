@@ -1,5 +1,7 @@
 # Template go Experience
 
+Author: [@iagoEffting](https://twitter.com/iagoEffting)
+
 ## Getting started
 
 ### Instal the language

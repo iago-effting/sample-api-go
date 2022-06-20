@@ -29,14 +29,7 @@ func main() {
 	configService := configs.NewConfigService(os.Getenv("ENV"), logger)
 	configService.LoadEnvVars()
 
-	databaseService := database.NewDatabaseService(
-		database.DatabaseOptions{
-			DSN: configs.Env.Database.DSN,
-		},
-		logger,
-	)
-
-	databaseService.Connect()
+	database.StartConnection()
 
 	m, err := migrate.New(
 		fmt.Sprintf("file://%s", configs.Env.Migrations.Dir),

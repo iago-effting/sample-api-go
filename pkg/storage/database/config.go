@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"database/sql"
 
 	"github.com/go-kit/log"
@@ -22,7 +23,12 @@ type Service interface {
 }
 
 type DatabaseOptions struct {
-	DSN string
+	DSN 		string
+	User 		string 
+	Password 	string 
+	Host 		string 
+	Port 		int 
+	Name 		string 
 }
 
 var BunDb *bun.DB
@@ -39,6 +45,19 @@ func (s service) GetDb() *bun.DB {
 }
 
 func (s service) Connect() error {
+	if s.DatabaseOptions.DSN == "" {
+		s.DatabaseOptions.DSN = fmt.Sprintf(
+			"postgres://%s:%s@%s:%d/%s?sslmode=disable",
+			s.DatabaseOptions.User,
+			s.DatabaseOptions.Password,
+			s.DatabaseOptions.Host,
+			s.DatabaseOptions.Port,
+			s.DatabaseOptions.Name,
+		)
+	}
+
+	fmt.Println("DSN:", s.DatabaseOptions.DSN)
+
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(s.DatabaseOptions.DSN)))
 
 	BunDb = bun.NewDB(sqldb, pgdialect.New())

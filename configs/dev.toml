@@ -1,5 +1,10 @@
 name = "dev"
 debug = true
 
-[database]
-dsn="postgres://postgres:postgres@localhost:5432/program_dev?sslmode=disable"
+# [database]
+# dsn="postgres://postgres:postgres@localhost:5432/program_dev?sslmode=disable"
+# user = "postgres"
+# password = "postgres"
+# Host = "localhost"
+# port = 5432
+# name = "program_dev"

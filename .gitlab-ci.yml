@@ -1,16 +1,53 @@
 image: golang:1.18
 
+services:
+  - postgres:12.2-alpine
+
+variables:
+  POSTGRES_DB: $POSTGRES_DB
+  POSTGRES_USER: $POSTGRES_USER
+  POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+  POSTGRES_HOST_AUTH_METHOD: trust
+
+  DATABASE_NAME: $POSTGRES_DB
+  DATABASE_USER: $POSTGRES_USER
+  DATABASE_PASSWORD: $POSTGRES_PASSWORD
+  DATABASE_PORT: 5432
+  DATABASE_HOST: postgres
+
 stages:
+  - env
   - test
   - build
 
-before_script:
-  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.46.1
-  - mkdir ./bin | curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-arm64.tar.gz | tar xvz -C ./bin
-  - make deps
+dependencies:
+  stage: env
+  script:
+    - echo $DATABASE_NAME
+    - echo $DATABASE_USER
+    - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.46.1
+    - mkdir ./bin | curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-arm64.tar.gz | tar xvz -C ./bin
+    - make deps
+    - make build_focus
+  artifacts:
+    paths:
+    - ./bin/migrate
+    - ./bin/focus
+
+migrations:
+  stage: env
+  needs: ['dependencies']
+  dependencies:
+    - dependencies
+  script:
+    - ./bin/focus migrate
 
 unit_tests:
   stage: test
+  needs: ['migrations']
+  dependencies: 
+    - migrations
+
   script:
     - make test
 

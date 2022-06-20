@@ -19,7 +19,12 @@ type ConfigEnv struct {
 		Port int `env:"SERVER_PORT"`
 	}
 	Database struct {
-		DSN string `env:"DATABASE_DRIVER"`
+		DSN 		string 	`env:"DATABASE_DSN"`
+		User 		string 	`env:"DATABASE_USER"`
+		Password 	string 	`env:"DATABASE_PASSWORD"`
+		Host 		string 	`env:"DATABASE_HOST"`
+		Port 		int 	`env:"DATABASE_PORT"`
+		Name 		string 	`env:"DATABASE_NAME"`
 	}
 	Debug bool   `env:"DEBUG"`
 	Name  string `env:"ENV"`
@@ -49,6 +54,8 @@ func (s service) LoadEnvVars() {
 		environment = env
 	}
 
+	fmt.Println("env:", environment)
+
 	appconfiguration := ConfigEnv{}
 
 	_, filename, _, _ := runtime.Caller(0)
@@ -71,13 +78,12 @@ func (s service) LoadEnvVars() {
 
 	err := c.Feed()
 	if err != nil {
-		fmt.Println("Error", err.Error())
 		level.Error(s.Logger).Log(err)
 	}
 
 	Env = appconfiguration
 
-	fmt.Println("appconfiguration", appconfiguration.Database.DSN)
+	fmt.Println("appconfiguration", appconfiguration)
 
 	level.Debug(s.Logger).Log("LoadEnvVar", true)
 }
