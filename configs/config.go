@@ -10,6 +10,9 @@ import (
 )
 
 type ConfigEnv struct {
+	Migrations struct {
+		Dir string
+	}
 	Server struct {
 		Port int `env:"SERVER_PORT"`
 	}

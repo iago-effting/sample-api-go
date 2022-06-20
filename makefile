@@ -1,6 +1,7 @@
 MAKEFLAGS += -s # log silence
 MOD ?= mod
 VERSION ?= 0.0.1 # we can change for git tags here
+DSN ?=
 
 OS := $(if $(GOOS),$(GOOS),$(shell go env GOOS))
 ARCH := $(if $(GOARCH),$(GOARCH),$(shell go env GOARCH))
@@ -39,14 +40,12 @@ lint:
 	/bin/sh -c "				\
 		./scripts/lint.sh ./...	\
 	"
-deps:
+deps: ./bin/migrate
 	/bin/sh -c "				\
 		./scripts/deps.sh		\
 	"
 
-db-build:
+./bin/migrate:
 	/bin/sh -c "					\
-		go build 					\
-		-o ./bin/ed					\
-		./cmd/migrations/main.go	\
+		./scripts/tool-deps.sh		\
 	"

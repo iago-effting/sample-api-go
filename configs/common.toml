@@ -1,2 +1,5 @@
+[migrations]
+dir="migrations/"
+
 [server]
 port = 2020
