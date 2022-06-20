@@ -7,6 +7,7 @@ import (
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/extra/bundebug"
 )
 
 func StartConnection() (*bun.DB, error) {
@@ -32,6 +33,10 @@ func StartConnection() (*bun.DB, error) {
 	if err != nil {
 		level.Error(logger).Log("Exit", err)
 		os.Exit(-1)
+	}
+
+	if configs.Env.Debug {
+		BunDb.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 	}
 
 	return BunDb, nil

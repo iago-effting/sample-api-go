@@ -37,14 +37,13 @@ func Repo() Repository {
 	}
 }
 
-func (r *Repository) Save(ctx context.Context, user auth.User) (*auth.User, error) {
+func (r Repository) Save(ctx context.Context, user auth.User) (*auth.User, error) {
 	model := &UserBun{
 		Email:    user.Email,
 		Password: user.Password,
 	}
 
 	_, err := r.connection.NewInsert().Model(model).Exec(ctx)
-
 	if err != nil {
 		return nil, err
 	}
@@ -52,4 +51,20 @@ func (r *Repository) Save(ctx context.Context, user auth.User) (*auth.User, erro
 	user = model.ToEntity()
 
 	return &user, nil
+}
+
+func (r Repository) All(ctx context.Context) (*[]auth.User, error) {
+	var usersModel []UserBun
+	var users []auth.User
+
+	err := r.connection.NewSelect().Model(&usersModel).Scan(ctx)
+	if err != nil {
+		return &users, err
+	}
+
+	for _, user := range usersModel {
+		users = append(users, user.ToEntity())
+	}
+
+	return &users, nil
 }
