@@ -1,13 +1,8 @@
 package handlers
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
-	"iago-effting/api-example/configs"
-	"iago-effting/api-example/pkg/storage/database"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -16,7 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/stretchr/testify/assert"
+	"github.com/steinfletcher/apitest"
+	jsonpath "github.com/steinfletcher/apitest-jsonpath"
+
+	"iago-effting/api-example/configs"
+	"iago-effting/api-example/pkg/storage/database"
 )
 
 func init() {
@@ -39,72 +38,39 @@ func clearTables() {
 	database.BunDb.NewTruncateTable().Table("users").Exec(ctx)
 }
 
-type ResponseCreatedUser struct {
-	Data struct {
-		Id    string `json:"id"`
-		Email string `json:"email"`
-	}
-}
-
 func TestCreateUser(t *testing.T) {
 	clearTables()
 
-	var target *ResponseCreatedUser
-	var expectedResponse string
-
 	server := gin.Default()
 	server.POST("/v1/users", CreateUser)
-
 	ts := httptest.NewServer(server)
-	defer ts.Close()
+	ts.Close()
 
-	// TODO: Maybe a factory?
-	params := CreateUserRequest{
-		Email:          "test@test.com",
-		Password:       "12345",
-		RepeatPassword: "12345",
-	}
+	t.Run("User Created", func(t *testing.T) {
+		params := CreateUserRequest{
+			Email:          "test@test.com",
+			Password:       "12345",
+			RepeatPassword: "12345",
+		}
 
-	url := fmt.Sprintf("%s/v1/users", ts.URL)
-	body, _ := json.Marshal(params)
+		body, _ := json.Marshal(params)
 
-	response, err := http.Post(url, "application/json", bytes.NewBuffer(body))
-	defer response.Body.Close()
+		apitest.New().
+			Handler(server).
+			Post("/v1/users").
+			JSON(string(body)).
+			Expect(t).
+			Assert(jsonpath.Equal(`$.data.email`, params.Email)).
+			Status(http.StatusOK).
+			End()
+	})
 
-	assert.Nil(t, err)
-	assert.Equal(t, http.StatusOK, response.StatusCode)
-
-	json.NewDecoder(response.Body).Decode(&target)
-
-	assert.Equal(t, params.Email, target.Data.Email)
-	assert.IsType(t, expectedResponse, target.Data.Id)
-}
-
-func TestCreateUserWithNoParams(t *testing.T) {
-	clearTables()
-
-	server := gin.Default()
-	server.POST("/v1/users", CreateUser)
-
-	ts := httptest.NewServer(server)
-	defer ts.Close()
-
-	missing_params := CreateUserRequest{
-		Email:    "test@test.com",
-		Password: "12345",
-	}
-
-	body, _ := json.Marshal(missing_params)
-	url := fmt.Sprintf("%s/v1/users", ts.URL)
-
-	// TODO: we need a better response
-	expected := `{"error":"Key: 'CreateUserRequest.RepeatPassword' Error:Field validation for 'RepeatPassword' failed on the 'required' tag"}`
-
-	response, _ := http.Post(url, "application/json", bytes.NewBuffer(body))
-	defer response.Body.Close()
-
-	assert.Equal(t, http.StatusBadRequest, response.StatusCode)
-
-	actual, _ := ioutil.ReadAll(response.Body)
-	assert.Equal(t, expected, string(actual))
+	t.Run("Params not valid", func(t *testing.T) {
+		apitest.New().
+			Handler(server).
+			Post("/v1/users").
+			Expect(t).
+			Status(http.StatusBadRequest).
+			End()
+	})
 }

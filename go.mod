@@ -8,6 +8,8 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/golobby/config/v3 v3.3.4
 	github.com/google/uuid v1.3.0
+	github.com/steinfletcher/apitest v1.5.12
+	github.com/steinfletcher/apitest-jsonpath v1.7.1
 	github.com/stretchr/testify v1.7.1
 	github.com/uptrace/bun v1.1.5
 	github.com/uptrace/bun/dialect/pgdialect v1.1.5
@@ -18,6 +20,8 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.1.0 // indirect
+	github.com/PaesslerAG/gval v1.0.0 // indirect
+	github.com/PaesslerAG/jsonpath v0.1.1 // indirect
 	github.com/antzucaro/matchr v0.0.0-20210222213004-b04723ef80f0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
