@@ -1,14 +1,14 @@
 package http
 
 import (
-	"iago-effting/go-template/pkg/http/rest"
+	"iago-effting/api-example/pkg/http/rest"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Run() error {
+func Run(port string) error {
 	router := gin.Default()
 	router = rest.Router(router)
 
-	return router.Run(":8080")
+	return router.Run(port)
 }
