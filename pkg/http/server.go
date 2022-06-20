@@ -1,6 +1,7 @@
 package http
 
 import (
+	"database/sql"
 	"iago-effting/api-example/configs"
 	"iago-effting/api-example/pkg/http/rest"
 
@@ -11,16 +12,18 @@ import (
 type service struct {
 	Logger log.Logger
 	Port   string
+	DB     *sql.DB
 }
 
 type Service interface {
 	Run() error
 }
 
-func NewServerService(port string, logger log.Logger) Service {
+func NewServerService(port string, logger log.Logger, db *sql.DB) Service {
 	return &service{
 		Logger: logger,
 		Port:   port,
+		DB:     db,
 	}
 }
 

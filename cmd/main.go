@@ -7,6 +7,7 @@ import (
 	"iago-effting/api-example/configs"
 	"iago-effting/api-example/pkg/http"
 	"iago-effting/api-example/pkg/version"
+	"iago-effting/api-example/storage/database"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
@@ -33,8 +34,25 @@ func main() {
 
 	port := fmt.Sprintf(":%d", configs.Env.Server.Port)
 
-	serverService := http.NewServerService(port, logger)
-	err := serverService.Run()
+	databaseService := database.NewDatabaseService(
+		database.DatabaseOptions{
+			Driver: "file::memory:?cache=shared",
+		},
+		logger,
+	)
+
+	err := databaseService.Connect()
+	if err != nil {
+		level.Error(logger).Log("Exit", err)
+	}
+
+	serverService := http.NewServerService(
+		port,
+		logger,
+		databaseService.GetDb(),
+	)
+
+	err = serverService.Run()
 
 	if err != nil {
 		level.Error(logger).Log("Exit", err)
