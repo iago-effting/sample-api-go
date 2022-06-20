@@ -1,13 +1,14 @@
 package database
 
 import (
-	"iago-effting/api-example/configs"
 	"os"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/extra/bundebug"
+
+	"iago-effting/api-example/configs"
 )
 
 func StartConnection() (*bun.DB, error) {
@@ -24,12 +25,12 @@ func StartConnection() (*bun.DB, error) {
 
 	databaseService := NewDatabaseService(
 		DatabaseOptions{
-			DSN: configs.Env.Database.DSN,
-			User: configs.Env.Database.User,
+			DSN:      configs.Env.Database.DSN,
+			User:     configs.Env.Database.User,
 			Password: configs.Env.Database.Password,
-			Host: configs.Env.Database.Host,
-			Port: configs.Env.Database.Port,
-			Name: configs.Env.Database.Name,
+			Host:     configs.Env.Database.Host,
+			Port:     configs.Env.Database.Port | 5432,
+			Name:     configs.Env.Database.Name,
 		},
 		logger,
 	)

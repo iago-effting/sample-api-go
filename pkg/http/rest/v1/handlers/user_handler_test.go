@@ -19,7 +19,7 @@ import (
 )
 
 func init() {
-	os.Setenv("ENV", "dev")
+	os.Setenv("ENV", "test")
 	var logger log.Logger
 	{
 		logger = log.NewLogfmtLogger(os.Stderr)

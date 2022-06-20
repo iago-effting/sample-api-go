@@ -8,11 +8,10 @@ import (
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
-	"github.com/urfave/cli/v2"
-
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/urfave/cli/v2"
 
 	"iago-effting/api-example/configs"
 	"iago-effting/api-example/pkg/storage/database"
@@ -29,7 +28,10 @@ func main() {
 	configService := configs.NewConfigService(os.Getenv("ENV"), logger)
 	configService.LoadEnvVars()
 
-	database.StartConnection()
+	_, err := database.StartConnection()
+	if err != nil {
+		level.Error(logger).Log(err)
+	}
 
 	m, err := migrate.New(
 		fmt.Sprintf("file://%s", configs.Env.Migrations.Dir),
@@ -50,7 +52,7 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		fmt.Println("args", err)
+		level.Error(logger).Log(err)
 	}
 }
 
@@ -75,7 +77,7 @@ func MakeCommands(migrator *migrate.Migrate, logger log.Logger) *cli.Command {
 					cmd.Stdout = &out
 
 					if err := cmd.Run(); err != nil {
-						fmt.Println(stderr.String())
+						level.Error(logger).Log(err)
 						return nil
 					}
 
@@ -92,6 +94,7 @@ func MigrationCommands(migrator *migrate.Migrate, logger log.Logger) *cli.Comman
 		Usage: "Manager your database migrations",
 		Action: func(ctx *cli.Context) error {
 			if err := migrator.Up(); err != nil {
+				level.Error(logger).Log("error", err.Error())
 				return err
 			}
 
@@ -103,6 +106,7 @@ func MigrationCommands(migrator *migrate.Migrate, logger log.Logger) *cli.Comman
 				Usage: "Rollback all migrations",
 				Action: func(c *cli.Context) error {
 					if err := migrator.Down(); err != nil {
+						level.Error(logger).Log(err)
 						return err
 					}
 

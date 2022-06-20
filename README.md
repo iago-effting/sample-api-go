@@ -57,6 +57,7 @@ In the future:
 - toml to file configuration (https://toml.io/en/)
 - bun ORM (https://bun.uptrace.dev/)
 - Database migration (https://github.com/golang-migrate/migrate/)
+- apitest (https://apitest.dev/)
 
 ## Folders
 

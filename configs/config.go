@@ -19,12 +19,12 @@ type ConfigEnv struct {
 		Port int `env:"SERVER_PORT"`
 	}
 	Database struct {
-		DSN 		string 	`env:"DATABASE_DSN"`
-		User 		string 	`env:"DATABASE_USER"`
-		Password 	string 	`env:"DATABASE_PASSWORD"`
-		Host 		string 	`env:"DATABASE_HOST"`
-		Port 		int 	`env:"DATABASE_PORT"`
-		Name 		string 	`env:"DATABASE_NAME"`
+		DSN      string `env:"DATABASE_DSN"`
+		User     string `env:"DATABASE_USER"`
+		Password string `env:"DATABASE_PASSWORD"`
+		Host     string `env:"DATABASE_HOST"`
+		Port     int    `env:"DATABASE_PORT"`
+		Name     string `env:"DATABASE_NAME"`
 	}
 	Debug bool   `env:"DEBUG"`
 	Name  string `env:"ENV"`
@@ -49,41 +49,34 @@ func NewConfigService(env string, logger log.Logger) Service {
 }
 
 func (s service) LoadEnvVars() {
-	environment := "dev"
-	if env := s.Env; env != "" {
-		environment = env
-	}
+	fmt.Println("s.env", s.Env)
 
-	fmt.Println("env:", environment)
-
-	appconfiguration := ConfigEnv{}
+	appConfiguration := ConfigEnv{}
 
 	_, filename, _, _ := runtime.Caller(0)
 	baseFolder := filepath.Dir(filename)
 
-	commonFileName := fmt.Sprintf("%s/%s.toml", baseFolder, environment)
+	commonFileName := fmt.Sprintf("%s/%s.toml", baseFolder, s.Env)
 	envFileName := fmt.Sprintf("%s/common.toml", baseFolder)
 
-	commomFeeder := feeder.Toml{Path: commonFileName}
+	commonFeeder := feeder.Toml{Path: commonFileName}
 	tomlFeeder := feeder.Toml{Path: envFileName}
 	envFeeder := feeder.Env{}
 
 	c := config.New()
 
-	c.AddFeeder(commomFeeder)
+	c.AddFeeder(commonFeeder)
 	c.AddFeeder(tomlFeeder)
 	c.AddFeeder(envFeeder)
 
-	c.AddStruct(&appconfiguration)
+	c.AddStruct(&appConfiguration)
 
 	err := c.Feed()
 	if err != nil {
 		level.Error(s.Logger).Log(err)
 	}
 
-	Env = appconfiguration
-
-	fmt.Println("appconfiguration", appconfiguration)
+	Env = appConfiguration
 
 	level.Debug(s.Logger).Log("LoadEnvVar", true)
 }
