@@ -1,8 +1,8 @@
 package database
 
 import (
-	"fmt"
 	"database/sql"
+	"fmt"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
@@ -23,12 +23,12 @@ type Service interface {
 }
 
 type DatabaseOptions struct {
-	DSN 		string
-	User 		string 
-	Password 	string 
-	Host 		string 
-	Port 		int 
-	Name 		string 
+	DSN      string
+	User     string
+	Password string
+	Host     string
+	Port     int
+	Name     string
 }
 
 var BunDb *bun.DB
@@ -55,8 +55,6 @@ func (s service) Connect() error {
 			s.DatabaseOptions.Name,
 		)
 	}
-
-	fmt.Println("DSN:", s.DatabaseOptions.DSN)
 
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(s.DatabaseOptions.DSN)))
 

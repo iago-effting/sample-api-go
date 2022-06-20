@@ -41,7 +41,7 @@ func StartConnection() (*bun.DB, error) {
 		os.Exit(-1)
 	}
 
-	if configs.Env.Debug {
+	if configs.Env.Debug.Database {
 		BunDb.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 	}
 

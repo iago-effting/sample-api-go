@@ -1,15 +1,16 @@
 package http
 
 import (
+	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
+	ginlogrus "github.com/toorop/gin-logrus"
+
 	"iago-effting/api-example/configs"
 	"iago-effting/api-example/pkg/http/rest"
-
-	"github.com/gin-gonic/gin"
-	"github.com/go-kit/log"
 )
 
 type service struct {
-	Logger log.Logger
+	Logger *logrus.Logger
 	Port   string
 }
 
@@ -17,7 +18,7 @@ type Service interface {
 	Run() error
 }
 
-func NewServerService(port string, logger log.Logger) Service {
+func NewServerService(port string, logger *logrus.Logger) Service {
 	return &service{
 		Logger: logger,
 		Port:   port,
@@ -25,12 +26,12 @@ func NewServerService(port string, logger log.Logger) Service {
 }
 
 func (s service) Run() error {
-	if !configs.Env.Debug {
+	if !configs.Env.Debug.Application {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
 	router := gin.Default()
-	router.Use(Logger(s.Logger))
+	router.Use(ginlogrus.Logger(s.Logger))
 	router = rest.Router(router)
 
 	return router.Run(s.Port)

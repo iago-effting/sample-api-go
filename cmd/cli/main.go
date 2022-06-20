@@ -3,11 +3,10 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
 
-	"github.com/go-kit/log"
-	"github.com/go-kit/log/level"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -18,11 +17,18 @@ import (
 )
 
 func main() {
-	var logger log.Logger
+	var logger = logrus.New()
 	{
-		logger = log.NewLogfmtLogger(os.Stderr)
-		logger = log.NewSyncLogger(logger)
-		logger = level.NewFilter(logger, level.AllowError())
+		logger.Out = os.Stdout
+		logger.SetReportCaller(false)
+
+		logger.SetFormatter(&logrus.TextFormatter{
+			ForceColors:      true,
+			DisableColors:    false,
+			DisableTimestamp: true,
+			DisableSorting:   true,
+			DisableQuote:     true,
+		})
 	}
 
 	configService := configs.NewConfigService(os.Getenv("ENV"), logger)
@@ -30,7 +36,7 @@ func main() {
 
 	_, err := database.StartConnection()
 	if err != nil {
-		level.Error(logger).Log(err)
+		logger.Error(err)
 	}
 
 	m, err := migrate.New(
@@ -39,7 +45,7 @@ func main() {
 	)
 
 	if err != nil {
-		level.Error(logger).Log(err)
+		logger.Error(err)
 	}
 
 	app := &cli.App{
@@ -52,11 +58,11 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		level.Error(logger).Log(err)
+		logger.Error(err)
 	}
 }
 
-func MakeCommands(migrator *migrate.Migrate, logger log.Logger) *cli.Command {
+func MakeCommands(migrator *migrate.Migrate, logger *logrus.Logger) *cli.Command {
 	return &cli.Command{
 		Name:  "make",
 		Usage: "Manager your make actions",
@@ -70,14 +76,18 @@ func MakeCommands(migrator *migrate.Migrate, logger log.Logger) *cli.Command {
 
 					args := ctx.Args()
 
-					cmd := exec.Command("./bin/migrate", "create", "-dir", configs.Env.Migrations.Dir, "-ext", "sql", args.First())
-					fmt.Println(cmd.String())
+					cmd := exec.Command(
+						"./bin/migrate",
+						"create", "-dir",
+						configs.Env.Migrations.Dir, "-ext", "sql",
+						args.First(),
+					)
 
 					cmd.Stderr = &stderr
 					cmd.Stdout = &out
 
 					if err := cmd.Run(); err != nil {
-						level.Error(logger).Log(err)
+						logger.Error(err)
 						return nil
 					}
 
@@ -88,13 +98,13 @@ func MakeCommands(migrator *migrate.Migrate, logger log.Logger) *cli.Command {
 	}
 }
 
-func MigrationCommands(migrator *migrate.Migrate, logger log.Logger) *cli.Command {
+func MigrationCommands(migrator *migrate.Migrate, logger *logrus.Logger) *cli.Command {
 	return &cli.Command{
 		Name:  "migrate",
 		Usage: "Manager your database migrations",
 		Action: func(ctx *cli.Context) error {
 			if err := migrator.Up(); err != nil {
-				level.Error(logger).Log("error", err.Error())
+				logger.Error(err)
 				return err
 			}
 
@@ -106,7 +116,7 @@ func MigrationCommands(migrator *migrate.Migrate, logger log.Logger) *cli.Comman
 				Usage: "Rollback all migrations",
 				Action: func(c *cli.Context) error {
 					if err := migrator.Down(); err != nil {
-						level.Error(logger).Log(err)
+						logger.Error(err)
 						return err
 					}
 

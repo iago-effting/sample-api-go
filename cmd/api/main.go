@@ -2,37 +2,47 @@ package main
 
 import (
 	"fmt"
+	"iago-effting/api-example/pkg/storage/database"
 	"os"
+
+	"github.com/sirupsen/logrus"
 
 	"iago-effting/api-example/configs"
 	"iago-effting/api-example/pkg/http"
-	"iago-effting/api-example/pkg/storage/database"
 	"iago-effting/api-example/pkg/version"
-
-	"github.com/go-kit/log"
-	"github.com/go-kit/log/level"
 )
 
 func main() {
-	var logger log.Logger
+	os.Setenv("ENV", "dev")
+
+	var logger = logrus.New()
 	{
-		logger = log.NewLogfmtLogger(os.Stderr)
-		logger = log.NewSyncLogger(logger)
-		logger = log.With(logger,
-			"service", "users",
-			"time:", log.DefaultTimestampUTC,
-			"caller", log.DefaultCaller,
-		)
+		logger.Out = os.Stdout
+		logger.SetReportCaller(false)
+
+		logger.SetFormatter(&logrus.TextFormatter{
+			ForceColors:      true,
+			DisableColors:    false,
+			DisableTimestamp: true,
+			DisableSorting:   true,
+			DisableQuote:     true,
+		})
 	}
+
+	logger.Debug("Env", os.Getenv("ENV"))
 
 	configService := configs.NewConfigService(os.Getenv("ENV"), logger)
 	configService.LoadEnvVars()
 
-	database.StartConnection()
+	_, dbError := database.StartConnection()
+	if dbError != nil {
+		logger.Error(dbError)
+		os.Exit(-1)
+	}
 
-	level.Debug(logger).Log("Env", configs.Env.Name)
-	level.Debug(logger).Log("Version", version.Version)
-	level.Debug(logger).Log("Date Release", version.Time)
+	logger.Debug("Env", configs.Env.Name)
+	logger.Debug("Version", version.Version)
+	logger.Debug("Date Release", version.Time)
 
 	port := fmt.Sprintf(":%d", configs.Env.Server.Port)
 
@@ -43,7 +53,8 @@ func main() {
 
 	err := serverService.Run()
 	if err != nil {
-		level.Error(logger).Log("Exit", err)
+		logger.SetReportCaller(true)
+		logger.Error("Exit", err)
 		os.Exit(-1)
 	}
 }

@@ -2,11 +2,10 @@ package configs
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"path/filepath"
 	"runtime"
 
-	"github.com/go-kit/log"
-	"github.com/go-kit/log/level"
 	"github.com/golobby/config/v3"
 	"github.com/golobby/config/v3/pkg/feeder"
 )
@@ -26,13 +25,16 @@ type ConfigEnv struct {
 		Port     int    `env:"DATABASE_PORT"`
 		Name     string `env:"DATABASE_NAME"`
 	}
-	Debug bool   `env:"DEBUG"`
-	Name  string `env:"ENV"`
+	Debug struct {
+		Database    bool `env:"DEBUG_DATABASE"`
+		Application bool `env:"DEBUG_APPLICATION"`
+	}
+	Name string `env:"ENV"`
 }
 
 type service struct {
 	Env    string
-	Logger log.Logger
+	Logger *logrus.Logger
 }
 
 type Service interface {
@@ -41,7 +43,7 @@ type Service interface {
 
 var Env ConfigEnv
 
-func NewConfigService(env string, logger log.Logger) Service {
+func NewConfigService(env string, logger *logrus.Logger) Service {
 	return &service{
 		Env:    env,
 		Logger: logger,
@@ -49,8 +51,6 @@ func NewConfigService(env string, logger log.Logger) Service {
 }
 
 func (s service) LoadEnvVars() {
-	fmt.Println("s.env", s.Env)
-
 	appConfiguration := ConfigEnv{}
 
 	_, filename, _, _ := runtime.Caller(0)
@@ -73,10 +73,10 @@ func (s service) LoadEnvVars() {
 
 	err := c.Feed()
 	if err != nil {
-		level.Error(s.Logger).Log(err)
+		s.Logger.Error(err)
 	}
 
 	Env = appConfiguration
 
-	level.Debug(s.Logger).Log("LoadEnvVar", true)
+	s.Logger.Debug("LoadEnvVar", true)
 }
