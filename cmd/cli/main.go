@@ -23,6 +23,7 @@ func main() {
 	{
 		logger = log.NewLogfmtLogger(os.Stderr)
 		logger = log.NewSyncLogger(logger)
+		logger = level.NewFilter(logger, level.AllowError())
 	}
 
 	configService := configs.NewConfigService(os.Getenv("ENV"), logger)
@@ -43,7 +44,7 @@ func main() {
 	)
 
 	if err != nil {
-		panic(err)
+		level.Error(logger).Log(err)
 	}
 
 	app := &cli.App{
@@ -73,9 +74,8 @@ func MakeCommands(migrator *migrate.Migrate, logger log.Logger) *cli.Command {
 					var out bytes.Buffer
 
 					args := ctx.Args()
-					fmt.Println("args", args)
 
-					cmd := exec.Command("./bin/migrate", "create", "-dir", configs.Env.Migrations.Dir, "-ext", "sql", "teste")
+					cmd := exec.Command("./bin/migrate", "create", "-dir", configs.Env.Migrations.Dir, "-ext", "sql", args.First())
 					fmt.Println(cmd.String())
 
 					cmd.Stderr = &stderr
@@ -98,8 +98,6 @@ func MigrationCommands(migrator *migrate.Migrate, logger log.Logger) *cli.Comman
 		Name:  "migrate",
 		Usage: "Manager your database migrations",
 		Action: func(ctx *cli.Context) error {
-			args := ctx.Args()
-			level.Debug(logger).Log(args)
 			if err := migrator.Up(); err != nil {
 				return err
 			}
