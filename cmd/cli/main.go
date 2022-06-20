@@ -19,6 +19,10 @@ import (
 func main() {
 	logger := logs.NewLoggerService(logs.LogrusAdapter())
 
+	if os.Getenv("ENV") == "" {
+		os.Setenv("ENV", "dev")
+	}
+
 	configService := configs.NewConfigService(os.Getenv("ENV"), logger)
 	configService.LoadEnvVars()
 

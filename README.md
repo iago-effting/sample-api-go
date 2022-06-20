@@ -58,6 +58,7 @@ In the future:
 - bun ORM (https://bun.uptrace.dev/)
 - Database migration (https://github.com/golang-migrate/migrate/)
 - apitest (https://apitest.dev/)
+- bcrypt (https://pkg.go.dev/golang.org/x/crypto/bcrypt)
 
 ## Folders
 

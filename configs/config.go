@@ -2,7 +2,6 @@ package configs
 
 import (
 	"fmt"
-
 	"path/filepath"
 	"runtime"
 
@@ -13,6 +12,11 @@ import (
 )
 
 type ConfigEnv struct {
+	Authentication struct {
+		Secret  string `env:"AUTHENTICATION_SECRET"`
+		Issuer  string `env:"AUTHENTICATION_ISSUER"`
+		Expires int    `env:"AUTHENTICATION_HOURS_TO_EXPIRES"`
+	}
 	Migrations struct {
 		Dir string
 	}

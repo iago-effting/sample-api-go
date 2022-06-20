@@ -6,3 +6,7 @@ dsn="postgres://postgres:postgres@localhost:5432/program_dev?sslmode=disable"
 [debug]
 database = false
 application = true
+
+[authentication]
+issuer = "neurocoder"
+secret="secret"

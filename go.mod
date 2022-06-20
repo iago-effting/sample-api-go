@@ -3,6 +3,7 @@ module iago-effting/api-example
 go 1.18
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-kit/log v0.2.1
 	github.com/golang-migrate/migrate/v4 v4.15.2
@@ -17,6 +18,7 @@ require (
 	github.com/uptrace/bun/driver/pgdriver v1.1.5
 	github.com/uptrace/bun/extra/bundebug v1.1.5
 	github.com/urfave/cli/v2 v2.7.1
+	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
 )
 
 require (
@@ -53,7 +55,6 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
-	golang.org/x/crypto v0.0.0-20220516162934-403b01795ae8 // indirect
 	golang.org/x/sys v0.0.0-20220513210249-45d2b4557a2a // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect

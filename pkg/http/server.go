@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	ginlogrus "github.com/toorop/gin-logrus"
+	"iago-effting/api-example/pkg/http/rest/v1/midlewares"
 	"iago-effting/api-example/pkg/logs"
 
 	"iago-effting/api-example/configs"
@@ -33,7 +34,7 @@ func (s service) Run() error {
 
 	router := gin.Default()
 
-	router.Use(Logger(s.Logger))
+	router.Use(midlewares.Logger(s.Logger))
 	router.Use(ginlogrus.Logger(logrus.New()))
 
 	router = rest.Router(router)

@@ -2,11 +2,10 @@ package account
 
 import (
 	"context"
-
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
-
 	"iago-effting/api-example/pkg/accounts"
+	"iago-effting/api-example/pkg/authentication"
 	"iago-effting/api-example/pkg/storage/database"
 )
 
@@ -62,9 +61,14 @@ func (r Repository) Delete(ctx context.Context, id string) error {
 }
 
 func (r Repository) Save(ctx context.Context, user accounts.User) (*accounts.User, error) {
+	password, errHash := authentication.HashPassword(user.Password)
+	if errHash != nil {
+		return nil, errHash
+	}
+
 	model := &UserBun{
 		Email:    user.Email,
-		Password: user.Password,
+		Password: password,
 	}
 
 	_, err := r.connection.NewInsert().Model(model).Exec(ctx)

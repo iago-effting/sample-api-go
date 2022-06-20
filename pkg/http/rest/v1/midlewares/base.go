@@ -1,4 +1,4 @@
-package http
+package midlewares
 
 import (
 	"github.com/gin-gonic/gin"
