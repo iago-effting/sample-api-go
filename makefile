@@ -47,6 +47,6 @@ deps:
 db-build:
 	/bin/sh -c "					\
 		go build 					\
-		-o ./bin/auto				\
+		-o ./bin/ed					\
 		./cmd/migrations/main.go	\
 	"

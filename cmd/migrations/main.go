@@ -71,7 +71,6 @@ func newDBCommand(migrator *migrate.Migrator, logger log.Logger) *cli.Command {
 				Name:  "init",
 				Usage: "create migration tables",
 				Action: func(c *cli.Context) error {
-					level.Error(logger).Log("Init", "start")
 					return migrator.Init(c.Context)
 				},
 			},
